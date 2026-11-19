@@ -1,125 +1,136 @@
-# BusLight GenAI — RAG local + agente especializado
+# BusLight GenAI — LLM local, RAG e agente especializado
 
-Assistente de mobilidade em português para o projeto BusLight. Este repositório implementa uma comparação controlada entre **LLM sem contexto**, **RAG simples** e **RAG + agente especializado**, usando o mesmo modelo local.
+Assistente de mobilidade em português para o projeto BusLight. Este repositório compara o mesmo modelo local em três configurações: **BASE sem contexto**, **RAG simples** e **RAG + agente especializado**.
 
-> **Importante:** o módulo responde sobre a documentação curada. Ele não acessa a posição/ETA ao vivo da SPTrans nem a câmera do ponto nesta versão. Portanto, não deve inventar chegada, lotação ou segurança atual. A integração com Olho Vivo deve ocorrer no backend por ferramenta separada.
+> **Limite da demonstração:** esta versão responde sobre a documentação curada. Ela não acessa a posição/ETA ao vivo da SPTrans nem a câmera do ponto. Portanto, não deve inventar chegada, lotação ou segurança atual. A integração Olho Vivo deve ocorrer no backend por ferramenta separada, com timestamp.
 
-## Entregáveis do desafio
+## Entregáveis
 
 - `docs/FICHA_TECNICA.md`: tarefa da IA, escopo, cidadão e limites.
 - `arquitetura/pipeline.mmd`: diagrama do pipeline.
-- `base/trechos.jsonl`: trechos com IDs e fontes.
-- `base/fontes.csv`: formato, licença/condições, acesso e contagem de trechos por fonte.
-- `avaliacao/conjunto_teste.jsonl`: perguntas, gabaritos e casos “não consta”.
-- `src/evaluate_retrieval.py`: mede Recall@1, Recall@3, HitRate e calibra o limiar.
-- `src/evaluate_llm.py`: compara as três configurações e gera placar e respostas brutas.
-- `docs/ANALISE_DE_ERROS.md`: cinco cenários de falha reproduzíveis e plano para registrar erro real.
-- `notebooks/01_pipeline_e_avaliacao.ipynb`: demonstração executável de recuperação e avaliação.
-- `docs/RELATORIO_TECNICO.md`: relatório solicitado para GitHub.
+- `base/trechos.jsonl`: trechos documentais com IDs e fontes.
+- `base/fontes.csv`: formato, licença/condições, acesso e contagem de trechos.
+- `avaliacao/conjunto_teste.jsonl`: 21 perguntas e gabaritos, incluindo cinco casos de abstenção.
+- `src/evaluate_retrieval.py`: Recall@1, Recall@3, HitRate e calibração de limiar.
+- `src/evaluate_llm.py`: comparação das três configurações e geração do placar/respostas.
+- `avaliacao/respostas_benchmark.jsonl`: respostas literais da execução incluída neste repositório.
+- `avaliacao/placar_tres_configuracoes.csv` e `.md`: placar medido.
+- `docs/ANALISE_DE_ERROS.md`: cinco erros reais observados, respostas literais, causas e correções propostas.
+- `notebooks/01_pipeline_e_avaliacao.ipynb`: recuperação e análise dos resultados salvos.
+- `docs/RELATORIO_TECNICO.md`: relatório da atividade.
 
 ## Requisitos
 
 - Python 3.11 ou superior.
 - Ollama instalado e em execução local.
-- Memória suficiente para o modelo Qwen 2.5 3B. A primeira execução pode baixar o modelo.
-- Verifique a licença do modelo Qwen 2.5 3B antes de uso comercial; a distribuição indicada na página do modelo usa a Qwen Research License.
+- Memória suficiente para o modelo Qwen 2.5 3B; a primeira execução baixa o modelo.
+- Verificar licença/condições do modelo antes de qualquer uso comercial.
 
-## Reproduzir
-
-```bash
-# 1. Crie e ative um ambiente virtual
-python -m venv .venv
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-# Linux/macOS: source .venv/bin/activate
-
-# 2. Instale dependências
-pip install -r requirements.txt
-
-# 3. Baixe/prepare o modelo local
-ollama pull qwen2.5:3b
-
-# 4. Meça busca, recall e limiar
-python -m src.evaluate_retrieval
-
-# 5. Rode os testes unitários
-python -m unittest discover -s tests -v
-
-# 6. Rode o benchmark das três configurações
-python -m src.evaluate_llm
-
-# 7. Suba a API local
-uvicorn src.api:app --host 127.0.0.1 --port 8000
-
-Depois de iniciar a API, abra `http://127.0.0.1:8000/` para ver os links, ou `http://127.0.0.1:8000/docs` para testar os endpoints.
-```
-
-A etapa 5 faz 3 chamadas por caso do conjunto de teste; pode levar alguns minutos conforme o hardware. Os resultados reais são escritos em `avaliacao/placar_tres_configuracoes.csv`, `avaliacao/placar_tres_configuracoes.md` e `avaliacao/respostas_benchmark.jsonl`.
-
-### Exemplo de chamada
-
-```bash
-curl -X POST http://127.0.0.1:8000/assist \
-  -H "Content-Type: application/json" \
-  -d '{"question":"Como consigo o token do Olho Vivo?","mode":"agent"}'
-```
-
-No Windows PowerShell:
+## Reproduzir no Windows PowerShell
 
 ```powershell
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/assist `
-  -ContentType 'application/json' `
-  -Body '{"question":"Como consigo o token do Olho Vivo?","mode":"agent"}'
+# 1. Criar e ativar ambiente virtual
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# 2. Instalar dependências
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+
+# 3. Baixar o modelo local
+ollama pull qwen2.5:3b
+
+# 4. Medir a recuperação e o limiar
+python -m src.evaluate_retrieval
+
+# 5. Executar testes automatizados
+python -m unittest discover -s tests -v
+
+# 6. Executar benchmark completo (21 perguntas x 3 modos = 63 chamadas)
+python -m src.evaluate_llm
+
+# 7. Iniciar API local
+python -m uvicorn src.api:app --host 127.0.0.1 --port 8000
+```
+
+Depois de iniciar a API, abra:
+
+- `http://127.0.0.1:8000/` — resumo e links da API.
+- `http://127.0.0.1:8000/docs` — documentação interativa para testar `/assist`.
+- `http://127.0.0.1:8000/health` — status e configuração.
+- `http://127.0.0.1:8000/sources` — inventário de fontes.
+
+No Windows, mantenha a janela do Uvicorn aberta enquanto testa a API. Use uma segunda janela PowerShell para executar chamadas HTTP.
+
+## Exemplo de chamada
+
+```powershell
+$body = @{ question = "Como a API informa se um ônibus é acessível?"; mode = "agent" } | ConvertTo-Json
+Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8000/assist" -ContentType "application/json" -Body $body
 ```
 
 ## As três configurações
 
 | Modo | Contexto | Especialização | Finalidade |
 |---|---|---|---|
-| `base` | Nenhum | Prompt genérico | Linha de base do mesmo modelo sem RAG |
-| `rag` | Top-3 trechos recuperados | Prompt RAG simples | Medir ganho de contexto documental |
-| `agent` | Top-3 + limiar | Regras BusLight, recusa para dados ao vivo, JSON e verificador de citação | Medir ganho da especialização |
+| `base` | Nenhum | Prompt genérico | Linha de base do mesmo modelo sem recuperação |
+| `rag` | Top-3 trechos recuperados | Prompt documental RAG | Medir efeito do contexto documental |
+| `agent` | Top-3 + limiar | Regras BusLight, política live, validação de citações | Medir efeito da especialização por agente |
 
-A especialização escolhida foi **agente**, alternativa prevista na rubrica, em vez de LoRA. Nenhum peso é atualizado; a comparação isola o efeito da recuperação e da camada de agente.
+O agente é a alternativa de especialização escolhida na rubrica; nenhum peso do LLM é atualizado (não é LoRA).
 
-## Métricas
+## Resultados da execução salva no repositório
 
-- **Recall@k:** total de trechos relevantes recuperados entre os k primeiros / total de rótulos relevantes manuais.
-- **HitRate@k:** proporção de perguntas respondíveis com ao menos um trecho relevante no top-k.
-- **Aprovação do caso:** JSON válido + decisão correta entre responder/abster-se + conceitos obrigatórios presentes + citação relevante nas perguntas respondíveis.
-- **Taxa de resposta sem suporte:** fração das perguntas “não consta” em que o modelo respondeu mesmo assim. É um proxy de alucinação, não uma medição semântica perfeita.
-- **Latência média:** tempo medido por chamada no mesmo ambiente.
+Modelo: `qwen2.5:3b`; 21 perguntas por modo; 63 respostas no JSONL.
 
-O gabarito de relevância é manual e deve ser revisado por uma pessoa. Não trate métricas automáticas como prova definitiva de factualidade.
+| Indicador | Base | RAG | Agent |
+|---|---:|---:|---:|
+| Aprovação | 0,0% (0/21) | 19,0% (4/21) | 61,9% (13/21) |
+| JSON válido | 100% | 100% | 100% |
+| Citações corretas em perguntas respondíveis | N/A | 62,5% (10/16) | 93,75% (15/16) |
+| Acerto de abstenção | 0% (0/5) | 80% (4/5) | 100% (5/5) |
+| Resposta sem suporte em cinco casos não respondíveis | 0% | 0% | 0% |
+| Latência média | 11,16 s | 31,21 s | 32,74 s |
+
+**Interpretação importante:** o indicador de resposta sem suporte acima considera exclusivamente as cinco perguntas marcadas como não respondíveis. Ele não detecta todas as afirmações factuais erradas em perguntas respondíveis. Por exemplo, a resposta BASE à Q10 inventou uma lista de princípios da LGPD; esse erro está registrado em `docs/ANALISE_DE_ERROS.md`. A taxa de aprovação automática usa conceitos e citações definidos manualmente; revise as respostas antes da conclusão.
+
+O agente obteve 42,9 pontos percentuais a mais de aprovação que o RAG simples nesta execução, mas ainda teve falhas em perguntas documentais. O placar não deve ser descrito como prova de ausência de alucinação.
+
+## Métricas de recuperação
+
+Resultados salvos em `avaliacao/metricas_busca.json`:
+
+- Recall@1: 83,3%.
+- HitRate@1: 93,75%.
+- Recall@3: 100%.
+- HitRate@3: 100%.
+- Limiar recomendado: 0,1224 (ponto médio entre score positivo mínimo 0,1321 e negativo máximo 0,1127).
 
 ## Segurança, LGPD e operação
 
-- Tokens da SPTrans ficam apenas no backend, em variável de ambiente/secret manager.
-- Não versionar `.env`, tokens, imagens de passageiros, endereços residenciais ou logs identificáveis.
-- A demonstração não precisa de dado pessoal. Não pedir CPF, nome ou localização residencial ao passageiro.
-- A contagem de pessoas foi especificada sem reconhecimento facial e sem retenção de imagem como salvaguarda proposta; antes de piloto, validar base legal, aviso, retenção, acesso e avaliação de impacto.
+- Tokens da SPTrans ficam apenas no backend, em variável de ambiente/secret manager; nunca versionar `.env`.
+- Não versionar dados pessoais, imagens de passageiros ou logs identificáveis.
+- A contagem sem reconhecimento facial e sem retenção de imagens está registrada como salvaguarda proposta; não é declaração de implementação ou aprovação jurídica.
 - API vinculada a `127.0.0.1` por padrão. Não expor publicamente sem autenticação, TLS, rate limit, monitoramento e política de privacidade.
-- A resposta operacional deve sempre mostrar timestamp da fonte. Se API falhar, exibir indisponibilidade; nunca transformar cache antigo em “agora”.
-
-## Limitações e próximos passos
-
-1. Conectar backend ao Olho Vivo com token de servidor e injetar previsão + timestamp como ferramenta autorizada.
-2. Integrar contagem agregada do YOLO sem armazenar frames, após revisão de privacidade.
-3. Ampliar base com arquivo GTFS real da SPTrans, registrando versão, extração, licença do feed e número de trechos derivados.
-4. Aumentar o conjunto de teste com casos reais anonimizados e validação de passageiros.
-5. Executar o benchmark local, preencher resultados e substituir os cinco cenários de falha por cinco saídas reais do modelo.
+- A resposta operacional deve usar timestamp da fonte. Se Olho Vivo falhar, exibir indisponibilidade; nunca tratar cache antigo como “agora”.
 
 ## Testes automatizados
 
-```bash
+```powershell
 python -m unittest discover -s tests -v
 ```
 
-Os testes cobrem roteamento de perguntas por política e recuperação de trechos. Eles não substituem a execução do benchmark LLM.
+Na versão incluída no ZIP verificado, os 20 testes passaram. Os testes automatizados não substituem a avaliação do LLM com Ollama.
 
 ## Integrantes
 
-Preencher todos os integrantes com **nome completo e RM** antes da entrega. Não foram inventados nomes nem RMs.
+Conforme a lista atualmente registrada pela equipe; confirmar nomes completos conforme cadastro acadêmico:
 
-- `Aline Zeppelini` — `RM97966`
-- `Camilly Ishida` — `RM551474`
-- `Julia Galvão` — `RM550201`
+- Aline Zeppelini — RM 97966
+- Camilly Ishida — RM 551474
+- Julia Galvão — RM 550201
+
+## Links para publicação
+
+- Repositório informado: https://github.com/Millkyy/BusLight-GenAI.
+- Vídeo de demonstração: [].
