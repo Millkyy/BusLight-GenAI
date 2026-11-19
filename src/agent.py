@@ -260,8 +260,32 @@ def answer(
 
     # Apenas AGENT aplica a validação especializada pós-geração.
     # RAG simples mantém o comportamento bruto do RAG para comparação.
-    if mode == "agent":
+    if mode == "base":
+        # A configuração sem contexto também deve manter coerência entre
+        # status e recusa. Não adicionamos conhecimento nem citações.
+        if _is_refusal_text(result.get("answer", "")):
+            result["status"] = "abstained"
+            result["citations"] = []
+    elif mode == "agent":
         result = _validate_agent_response(result, retrieved)
+        # Uma única segunda tentativa é permitida quando o modelo deixou
+        # de produzir uma resposta documental fundamentada. Nunca fabricamos
+        # citações ou respostas a partir do gabarito.
+        if result["status"] == "abstained" and retrieved:
+            retry_prompt = (
+                user_prompt
+                + "\n\nREVISÃO: Examine cada trecho. Se houver resposta "
+                  "documental explícita, responda com status=answered e "
+                  "cite o chunk_id exato em citations (objeto com chunk_id, "
+                  "source_id, title e url). Se não houver evidência "
+                  "suficiente, mantenha status=abstained, answer='Não consta' "
+                  "e citations=[]. Não copie os marcadores do contexto "
+                  "para answer e não invente evidências."
+            )
+            retried = generate(AGENT_SYSTEM, retry_prompt)
+            validated_retry = _validate_agent_response(retried, retrieved)
+            if validated_retry["status"] == "answered":
+                result = validated_retry
 
     result["mode"] = mode
     result["model"] = OLLAMA_MODEL
