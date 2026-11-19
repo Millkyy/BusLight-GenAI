@@ -3,11 +3,10 @@
 
 **Disciplina:** Generative AI for Engineering  
 **Atividade:** Treinamento de uma LLM local  
-**Turma:** Engenharia de Software — 4º ano — 4ES  
+**Turma:** Engenharia de Software — 4º ano — 4ESR  
 **Integrantes:** preencher nome completo e RM de todos os integrantes  
-**Professor:** Francisco Elanio Bezerra  
-**Repositório:** `[URL pública do GitHub]`  
-**Vídeo:** `[URL do vídeo, quando disponível]`
+**Professor:** Francisco Elanio Bezerra    
+**Vídeo:** ``
 
 ---
 
@@ -156,6 +155,5 @@ O recorte de GenAI do BusLight é uma camada de orientação fundamentada, não 
 
 ## 13. Links finais
 
-- GitHub: `[INSERIR URL PÚBLICA]`
+- GitHub: `https://github.com/Millkyy/BusLight-GenAI`
 - Demonstração da API: `[INSERIR URL OU VÍDEO]`
-- Vídeo pitch/demonstração: `[INSERIR LINK]`

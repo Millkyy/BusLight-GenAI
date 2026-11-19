@@ -14,7 +14,6 @@ Assistente de mobilidade em português para o projeto BusLight. Este repositóri
 - `src/evaluate_retrieval.py`: mede Recall@1, Recall@3, HitRate e calibra o limiar.
 - `src/evaluate_llm.py`: compara as três configurações e gera placar e respostas brutas.
 - `docs/ANALISE_DE_ERROS.md`: cinco cenários de falha reproduzíveis e plano para registrar erro real.
-- `docs/ROTEIRO_DEMO.md`: roteiro curto para gravar a demonstração.
 - `notebooks/01_pipeline_e_avaliacao.ipynb`: demonstração executável de recuperação e avaliação.
 - `docs/RELATORIO_TECNICO.md`: relatório solicitado para GitHub.
 
