@@ -1,0 +1,21 @@
+flowchart TD
+    A[Fontes públicas + especificação BusLight] --> B[Curadoria e registro de fonte/licença]
+    B --> C[Segmentação em trechos com IDs]
+    C --> D[Índice lexical local TF-IDF: palavras + caracteres]
+    Q[Pergunta do passageiro] --> R[API FastAPI /assist]
+    R --> S{Configuração}
+    S -->|base| T[LLM local sem contexto]
+    S -->|RAG simples| U[Top-k + contexto documental]
+    S -->|agente especializado| V[Busca + limiar + regras de domínio]
+    D --> U
+    D --> V
+    U --> W[Qwen 2.5 3B via Ollama]
+    V --> W
+    T --> W
+    W --> X[Validação JSON / Pydantic]
+    X --> Y[Validação de citações contra chunks recuperados]
+    Y --> Z[Resposta ou abstenção + evidências]
+    Z --> AA[Passageiro PWA / totem por integração futura]
+    AB[Conjunto de teste com gabarito] --> AC[Recall@1 / Recall@3 / limiar]
+    AB --> AD[Benchmark base vs RAG vs agente]
+    AD --> AE[Placar + análise de erros]

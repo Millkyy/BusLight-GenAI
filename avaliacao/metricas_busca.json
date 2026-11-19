@@ -1,0 +1,15 @@
+{
+  "retrieval_metrics": {
+    "recall@1": 0.8333333333333334,
+    "hit_rate@1": 0.9375,
+    "recall@3": 1.0,
+    "hit_rate@3": 1.0,
+    "answerable_queries": 16,
+    "total_relevant_labels": 18
+  },
+  "positive_min_top1": 0.1321,
+  "negative_max_top1": 0.1127,
+  "separable": true,
+  "recommended_threshold": 0.1224,
+  "threshold_method": "midpoint between minimum positive and maximum unknown/non-live negative top-1 score; live-data refusals are policy-routed before retrieval"
+}

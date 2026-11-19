@@ -1,0 +1,26 @@
+# Arquivos do repositório
+
+- `.env.example`
+- `.gitignore`
+- `README.md`
+- `arquitetura/DECISOES_TECNICAS.md`
+- `arquitetura/pipeline.mmd`
+- `avaliacao/conjunto_teste.jsonl`
+- `base/fontes.csv`
+- `base/trechos.jsonl`
+- `docs/ANALISE_DE_ERROS.md`
+- `docs/CHECKLIST_ENTREGA.md`
+- `docs/FICHA_TECNICA.md`
+- `docs/RELATORIO_TECNICO.md`
+- `notebooks/01_pipeline_e_avaliacao.ipynb`
+- `requirements.txt`
+- `src/__init__.py`
+- `src/agent.py`
+- `src/api.py`
+- `src/config.py`
+- `src/evaluate_llm.py`
+- `src/evaluate_retrieval.py`
+- `src/knowledge.py`
+- `src/llm.py`
+- `src/retrieval.py`
+- `src/schemas.py`
