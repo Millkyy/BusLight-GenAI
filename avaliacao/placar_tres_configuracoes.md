@@ -1,11 +1,19 @@
 # Placar das três configurações
 
-Resultados medidos nesta execução, usando o mesmo modelo e os mesmos casos. Não substituir por estimativas.
+Modelo local: `qwen2.5:3b`.
+Resultados medidos nesta execução. Não substituir por estimativas.
 
-| Configuração | Casos | Taxa de aprovação | JSON válido | Citações corretas | Acerto da recusa | Resposta sem suporte | Latência média (s) |
+| Configuração | Casos | Aprovação | JSON válido | Citações corretas | Acerto da recusa | Resposta sem suporte | Latência média (s) |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| base | 21 | 23.8% | 100.0% | 0.0% | 100.0% | 0.0% | 0.00 |
-| rag | 21 | 57.1% | 100.0% | 93.8% | 100.0% | 0.0% | 38.88 |
-| agent | 21 | 38.1% | 100.0% | 37.5% | 100.0% | 0.0% | 34.44 |
+| base | 21 | 0.0% | 100.0% | N/A | 0.0% | 0.0% | 11.16 |
+| rag | 21 | 19.0% | 100.0% | 62.5% | 80.0% | 0.0% | 31.21 |
+| agent | 21 | 61.9% | 100.0% | 93.8% | 100.0% | 0.0% | 32.74 |
 
-**Interpretação:** comparar primeiro `agent` com `rag` (ganho da especialização) e `rag` com `base` (ganho da recuperação). Uma taxa menor de resposta sem suporte é desejável. Examinar manualmente as respostas antes de concluir.
+## Como interpretar
+
+- `base` não recebe documentos; por isso, citação é `N/A`, não 0% nem 100%.
+- Compare `rag` com `base` para observar o ganho da recuperação documental.
+- Compare `agent` com `rag` para observar o efeito das regras especializadas.
+- Uma taxa menor de respostas sem suporte nas perguntas sem resposta é desejável.
+- A taxa automática de aprovação é uma aproximação baseada no gabarito; revise manualmente respostas e fontes antes da conclusão.
+- O modo `rag` não recebe o bloqueio determinístico do agente; isso preserva a comparação experimental.
