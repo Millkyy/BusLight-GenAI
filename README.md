@@ -133,4 +133,4 @@ Conforme a lista atualmente registrada pela equipe; confirmar nomes completos co
 ## Links para publicação
 
 - Repositório informado: https://github.com/Millkyy/BusLight-GenAI.
-- Vídeo de demonstração: [].
+- Vídeo de demonstração: https://youtu.be/PZOIDPzZQCc.

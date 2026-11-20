@@ -173,6 +173,6 @@ Os resultados apoiam a escolha de uma camada de agente sobre RAG para o recorte 
 
 ## 13. Links finais
 
-- GitHub informado pela equipe: https://github.com/Millkyy/BusLight-GenAI (confirmar visibilidade pública e atualização final).
-- Vídeo de demonstração: `PREENCHER COM LINK DO VÍDEO NÃO LISTADO`.
+- GitHub informado pela equipe: https://github.com/Millkyy/BusLight-GenAI.
+- Vídeo de demonstração: `https://youtu.be/PZOIDPzZQCc`.
 - API local para gravação de demonstração: `http://127.0.0.1:8000/docs` (não é URL pública).
